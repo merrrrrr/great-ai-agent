@@ -18,6 +18,11 @@ backend/      # Lambda functions
 infrastructure/ # API Gateway, IAM, Amplify config
 ```
 
+## 🌐 Live Demo
+
+**Frontend:** [Deployed on AWS Amplify](https://main.d2k7lojphc90md.amplifyapp.com)
+**API:** https://0wnrk1jgj5.execute-api.ap-southeast-5.amazonaws.com/dev
+
 ## 🚀 Quick Setup Guide
 
 ### Prerequisites
@@ -88,8 +93,8 @@ sam deploy --guided
 cd frontend
 npm install
 
-# Update .env with deployed API URL (from SAM output)
-echo "REACT_APP_API_BASE_URL=https://your-api-gateway-url/dev" > .env
+# Update .env with deployed API URL
+echo "REACT_APP_API_BASE_URL=https://0wnrk1jgj5.execute-api.ap-southeast-5.amazonaws.com/dev" > .env
 
 # Start development server
 npm start
@@ -97,7 +102,7 @@ npm start
 
 ## 🌐 API Endpoints
 
-Base URL: `https://your-api-gateway-url/dev`
+Base URL: `https://0wnrk1jgj5.execute-api.ap-southeast-5.amazonaws.com/dev`
 
 - `POST /generateCampaign` - Generate AI campaign
 - `POST /saveCampaign` - Save campaign to database
@@ -105,7 +110,7 @@ Base URL: `https://your-api-gateway-url/dev`
 
 ### Example Request
 ```bash
-curl -X POST https://your-api-gateway-url/dev/generateCampaign \
+curl -X POST https://0wnrk1jgj5.execute-api.ap-southeast-5.amazonaws.com/dev/generateCampaign \
   -H "Content-Type: application/json" \
   -d '{
     "description": "Eco-friendly water bottles for active lifestyle",
