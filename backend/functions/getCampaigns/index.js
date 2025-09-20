@@ -1,11 +1,22 @@
-const dbClient = require('../../utils/dbClient');
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBDocumentClient, ScanCommand } = require("@aws-sdk/lib-dynamodb");
+
+const client = new DynamoDBClient({ region: "ap-southeast-5" });
+const docClient = DynamoDBDocumentClient.from(client);
+const TABLE_NAME = process.env.CAMPAIGNS_TABLE;
 
 exports.handler = async (event) => {
   try {
-    // Get user ID from Cognito token (simplified for demo)
-    const userId = event.requestContext?.authorizer?.claims?.sub || 'demo-user';
+    const command = new ScanCommand({
+      TableName: TABLE_NAME,
+      FilterExpression: "userId = :userId",
+      ExpressionAttributeValues: {
+        ":userId": 'demo-user'
+      }
+    });
     
-    const campaigns = await dbClient.getCampaigns(userId);
+    const response = await docClient.send(command);
+    const campaigns = response.Items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
     return {
       statusCode: 200,

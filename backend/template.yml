@@ -14,6 +14,28 @@ Parameters:
     NoEcho: true
 
 Resources:
+  # DynamoDB Table
+  CampaignsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: great-ai-agent-campaigns
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserIndex
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
   # API Gateway
   GreatAIAgentApi:
     Type: AWS::Serverless::Api
@@ -64,8 +86,10 @@ Resources:
       Runtime: nodejs18.x
       Environment:
         Variables:
-          DB_URI: !Ref DBUri
-          DB_NAME: great-ai-agent
+          CAMPAIGNS_TABLE: !Ref CampaignsTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CampaignsTable
       Events:
         SaveCampaign:
           Type: Api
@@ -82,14 +106,16 @@ Resources:
       Runtime: nodejs18.x
       Environment:
         Variables:
-          DB_URI: !Ref DBUri
-          DB_NAME: great-ai-agent
+          CAMPAIGNS_TABLE: !Ref CampaignsTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref CampaignsTable
       Events:
         GetCampaigns:
           Type: Api
           Properties:
             RestApiId: !Ref GreatAIAgentApi
-            Path: /campaigns
+            Path: /getCampaigns
             Method: get
 
 Outputs:

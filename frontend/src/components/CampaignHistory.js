@@ -10,7 +10,7 @@ function CampaignHistory() {
 
   const fetchCampaigns = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/getCampaigns`);
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/campaigns`);
       const data = await response.json();
       setCampaigns(data);
     } catch (error) {

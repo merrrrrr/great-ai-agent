@@ -1,16 +1,29 @@
-const dbClient = require('../../utils/dbClient');
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
+
+const client = new DynamoDBClient({ region: "ap-southeast-5" });
+const docClient = DynamoDBDocumentClient.from(client);
+const TABLE_NAME = process.env.CAMPAIGNS_TABLE;
 
 exports.handler = async (event) => {
   try {
     const campaignData = JSON.parse(event.body);
     
-    // Add user ID from Cognito token (simplified for demo)
-    const userId = event.requestContext?.authorizer?.claims?.sub || 'demo-user';
-    
-    const savedCampaign = await dbClient.saveCampaign({
+    // Add timestamp and ID if not present
+    const campaignToSave = {
       ...campaignData,
-      userId
+      id: campaignData.id || Date.now().toString(),
+      createdAt: campaignData.createdAt || new Date().toISOString(),
+      userId: 'demo-user'
+    };
+    
+    const command = new PutCommand({
+      TableName: TABLE_NAME,
+      Item: campaignToSave
     });
+    
+    await docClient.send(command);
+    const savedCampaign = campaignToSave;
     
     return {
       statusCode: 200,
