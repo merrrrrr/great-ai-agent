@@ -160,16 +160,6 @@ aws logs tail /aws/lambda/great-ai-agent-backend-GenerateCampaignFunction-* \
   --region ap-southeast-5 --since 10m
 ```
 
-## 💰 Cost Estimation
-
-- **Llama 3 8B**: ~$0.0003 per 1K tokens
-- **Nova Canvas**: ~$0.04-0.08 per image
-- **Lambda**: ~$0.20 per 1M requests
-- **S3**: ~$0.023 per GB storage
-- **API Gateway**: ~$3.50 per 1M requests
-
-**Estimated cost for 1000 campaigns**: ~$50-80 USD
-
 ## 📄 License
 
 MIT License - Built for hackathon demo

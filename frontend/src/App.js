@@ -1,29 +1,30 @@
-import React from 'react';
-import { Amplify } from 'aws-amplify';
-import { Authenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
-import './App.css';
+import React, { useState } from 'react';
 import Dashboard from './components/Dashboard';
-import awsExports from './aws-exports';
-
-Amplify.configure(awsExports);
+import CampaignForm from './components/CampaignForm';
+import CampaignHistory from './components/CampaignHistory';
+import './App.css';
 
 function App() {
+  const [currentView, setCurrentView] = useState('dashboard');
+  const [user, setUser] = useState({ name: 'Demo User' }); // Mock auth
+
   return (
-    <Authenticator>
-      {({ signOut, user }) => (
-        <div className="App">
-          <header className="app-header">
-            <h1>Great AI Agent 🚀</h1>
-            <div>
-              <span>Welcome, {user.username}!</span>
-              <button onClick={signOut} className="signout-btn">Sign Out</button>
-            </div>
-          </header>
-          <Dashboard user={user} />
+    <div className="App">
+      <nav className="navbar">
+        <h1>Great AI Agent</h1>
+        <div className="nav-links">
+          <button onClick={() => setCurrentView('dashboard')}>Dashboard</button>
+          <button onClick={() => setCurrentView('create')}>Create Campaign</button>
+          <button onClick={() => setCurrentView('history')}>History</button>
         </div>
-      )}
-    </Authenticator>
+      </nav>
+
+      <main className="main-content">
+        {currentView === 'dashboard' && <Dashboard setCurrentView={setCurrentView} />}
+        {currentView === 'create' && <CampaignForm />}
+        {currentView === 'history' && <CampaignHistory />}
+      </main>
+    </div>
   );
 }
 
