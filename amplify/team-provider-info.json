@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-greataiagent-dev-25bad-authRole",
+      "UnauthRoleArn": "arn:aws:iam::914194815977:role/amplify-greataiagent-dev-25bad-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::914194815977:role/amplify-greataiagent-dev-25bad-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-greataiagent-dev-25bad-deployment",
+      "UnauthRoleName": "amplify-greataiagent-dev-25bad-unauthRole",
+      "StackName": "amplify-greataiagent-dev-25bad",
+      "StackId": "arn:aws:cloudformation:us-east-1:914194815977:stack/amplify-greataiagent-dev-25bad/c2e9ef30-964b-11f0-9ca3-0affda18436f",
+      "AmplifyAppId": "d2k7lojphc90md"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d2k7lojphc90md",
+          "type": "manual"
+        }
+      }
+    }
+  }
+}
