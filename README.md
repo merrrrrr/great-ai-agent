@@ -18,115 +18,157 @@ backend/      # Lambda functions
 infrastructure/ # API Gateway, IAM, Amplify config
 ```
 
-## 🚀 Quick Start
+## 🚀 Quick Setup Guide
 
 ### Prerequisites
 - Node.js 18+
-- AWS CLI configured
+- AWS CLI configured with credentials
 - AWS SAM CLI installed
 - AWS Account with Bedrock access
 
-### 1. Frontend Setup
+### 1. Clone and Setup Environment
+```bash
+git clone <repository-url>
+cd great-ai-agent
+
+# Copy environment template
+cp .env.example .env
+```
+
+### 2. Configure AWS Credentials
+Update `.env` with your AWS credentials:
+```bash
+AWS_ACCESS_KEY_ID=your_access_key_here
+AWS_SECRET_ACCESS_KEY=your_secret_key_here
+S3_BUCKET=great-ai-agent-media
+```
+
+### 3. Enable Bedrock Models
+Go to AWS Bedrock Console (us-east-1 region):
+1. Navigate to **Model access**
+2. Enable these models:
+   - `meta.llama3-8b-instruct-v1:0` (Text generation)
+   - `amazon.nova-canvas-v1:0` (Image generation)
+
+### 4. Create S3 Bucket
+```bash
+# Create bucket in ap-southeast-5 (Malaysia)
+aws s3 mb s3://great-ai-agent-media --region ap-southeast-5
+
+# Make bucket publicly readable for images
+aws s3api put-bucket-policy --bucket great-ai-agent-media --policy '{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "PublicReadGetObject",
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": "s3:GetObject",
+    "Resource": "arn:aws:s3:::great-ai-agent-media/*"
+  }]
+}'
+```
+
+### 5. Deploy Backend
+```bash
+cd backend
+npm install
+sam build
+sam deploy --guided
+
+# Follow prompts:
+# - Stack name: great-ai-agent-backend
+# - Region: ap-southeast-5
+# - Confirm changes: Y
+# - Allow IAM role creation: Y
+# - Functions have no authentication: Y (for all)
+```
+
+### 6. Setup Frontend
 ```bash
 cd frontend
 npm install
 
-# Initialize Amplify (first time only)
-amplify init
-amplify add auth
-amplify push
+# Update .env with deployed API URL (from SAM output)
+echo "REACT_APP_API_BASE_URL=https://your-api-gateway-url/dev" > .env
 
 # Start development server
 npm start
 ```
 
-### 2. Backend Setup
+## 🌐 API Endpoints
+
+Base URL: `https://your-api-gateway-url/dev`
+
+- `POST /generateCampaign` - Generate AI campaign
+- `POST /saveCampaign` - Save campaign to database
+- `GET /getCampaigns` - Get campaign history
+
+### Example Request
 ```bash
-cd backend
-npm install
-
-# Deploy Lambda functions
-sam build
-sam deploy --guided
-```
-
-### 3. AWS Services Setup
-
-#### Enable Bedrock Models
-1. Go to AWS Console → Bedrock → Model access
-2. Enable: Claude v2, Stable Diffusion XL
-
-#### Create S3 Bucket
-```bash
-aws s3 mb s3://great-ai-agent-media --region ap-southeast-5
-aws s3api put-bucket-cors --bucket great-ai-agent-media --cors-configuration file://backend/cors.json
-```
-
-#### Update Frontend API URL
-After backend deployment, update `frontend/.env`:
-```
-REACT_APP_API_BASE_URL=https://your-api-gateway-url.execute-api.ap-southeast-5.amazonaws.com/dev
-```
-
-## 🌐 Deployment
-
-- **Frontend**: AWS Amplify (ap-southeast-5)
-- **Backend**: AWS Lambda + API Gateway
-- **Storage**: Amazon S3
-- **Database**: Amazon DocumentDB (optional)
-
-## 🔑 Environment Variables
-
-Copy `.env.example` to `.env` and update:
-
-```bash
-# AWS Configuration
-AWS_REGION=ap-southeast-5
-S3_BUCKET=great-ai-agent-media
-
-# API Gateway (from SAM deployment output)
-REACT_APP_API_BASE_URL=https://your-api-gateway-url
-
-# DocumentDB (optional)
-DB_URI=mongodb://username:password@cluster:27017/great-ai-agent
-DB_NAME=great-ai-agent
+curl -X POST https://your-api-gateway-url/dev/generateCampaign \
+  -H "Content-Type: application/json" \
+  -d '{
+    "description": "Eco-friendly water bottles for active lifestyle",
+    "targetAudience": "Health-conscious millennials",
+    "platform": "Instagram"
+  }'
 ```
 
 ## 🎯 Features
 
-- ✅ User authentication (AWS Cognito)
-- ✅ AI-powered caption generation (Bedrock Claude)
-- ✅ Image generation (Stable Diffusion)
-- ✅ Smart hashtag extraction (Comprehend)
+- ✅ AI-powered caption generation (Llama 3 8B)
+- ✅ AI image generation (Nova Canvas)
+- ✅ Smart hashtag extraction
+- ✅ Campaign preview (Instagram mockup)
 - ✅ Campaign history tracking
-- ✅ Multi-platform support (Instagram, TikTok, Facebook)
-
-## 🛠️ Development
-
-### Test Backend Locally
-```bash
-cd backend
-sam local start-api
-```
-
-### Frontend Development
-```bash
-cd frontend
-npm start
-```
-
-## 📝 API Endpoints
-
-- `POST /generateCampaign` - Generate AI content
-- `POST /saveCampaign` - Save campaign to database
-- `GET /campaigns` - Get user's campaign history
+- ✅ Multi-platform support
 
 ## 🔧 Troubleshooting
 
-1. **Bedrock Access Denied**: Enable models in Bedrock console
-2. **S3 Upload Failed**: Check bucket permissions and CORS
-3. **API Gateway 403**: Verify Lambda permissions
-4. **Frontend Auth Issues**: Check Amplify configuration
+### Common Issues
+
+1. **"Internal server error"**
+   - Check Bedrock model access is enabled
+   - Verify AWS credentials in Lambda environment
+   - Check CloudWatch logs: `aws logs tail /aws/lambda/function-name --region ap-southeast-5`
+
+2. **Images not displaying**
+   - Ensure S3 bucket policy allows public read
+   - Check S3 bucket exists in ap-southeast-5
+   - Verify image URLs use correct regional endpoint
+
+3. **"Model doesn't support on-demand throughput"**
+   - Ensure you're using Nova Canvas, not Titan Image Generator
+   - Titan requires expensive provisioned throughput (~$920/month)
+
+4. **Frontend can't connect to API**
+   - Update `frontend/.env` with correct API Gateway URL
+   - Check CORS is enabled in API Gateway
+
+### Get API Gateway URL
+```bash
+aws cloudformation describe-stacks \
+  --stack-name great-ai-agent-backend \
+  --region ap-southeast-5 \
+  --query "Stacks[0].Outputs[?OutputKey=='ApiGatewayUrl'].OutputValue" \
+  --output text
+```
+
+### View Lambda Logs
+```bash
+aws logs tail /aws/lambda/great-ai-agent-backend-GenerateCampaignFunction-* \
+  --region ap-southeast-5 --since 10m
+```
+
+## 💰 Cost Estimation
+
+- **Llama 3 8B**: ~$0.0003 per 1K tokens
+- **Nova Canvas**: ~$0.04-0.08 per image
+- **Lambda**: ~$0.20 per 1M requests
+- **S3**: ~$0.023 per GB storage
+- **API Gateway**: ~$3.50 per 1M requests
+
+**Estimated cost for 1000 campaigns**: ~$50-80 USD
 
 ## 📄 License
 
