@@ -1,0 +1,12 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "great-ai-agent-backend"
+resolve_s3 = true
+s3_prefix = "great-ai-agent-backend"
+region = "ap-southeast-5"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+parameter_overrides = "Environment=\"dev\" S3Bucket=\"great-ai-agent-media\""
+image_repositories = []

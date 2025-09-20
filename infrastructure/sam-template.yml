@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Great AI Agent API Gateway and Lambda Functions
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+  S3Bucket:
+    Type: String
+    Default: great-ai-agent-media
+  DBUri:
+    Type: String
+    NoEcho: true
+
+Resources:
+  # API Gateway
+  GreatAIAgentApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+  # Lambda Functions
+  GenerateCampaignFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/generateCampaign/
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref S3Bucket
+      Events:
+        GenerateCampaign:
+          Type: Api
+          Properties:
+            RestApiId: !Ref GreatAIAgentApi
+            Path: /generateCampaign
+            Method: post
+
+  SaveCampaignFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/saveCampaign/
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Environment:
+        Variables:
+          DB_URI: !Ref DBUri
+          DB_NAME: great-ai-agent
+      Events:
+        SaveCampaign:
+          Type: Api
+          Properties:
+            RestApiId: !Ref GreatAIAgentApi
+            Path: /saveCampaign
+            Method: post
+
+  GetCampaignsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/getCampaigns/
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Environment:
+        Variables:
+          DB_URI: !Ref DBUri
+          DB_NAME: great-ai-agent
+      Events:
+        GetCampaigns:
+          Type: Api
+          Properties:
+            RestApiId: !Ref GreatAIAgentApi
+            Path: /campaigns
+            Method: get
+
+Outputs:
+  ApiGatewayUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${GreatAIAgentApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"

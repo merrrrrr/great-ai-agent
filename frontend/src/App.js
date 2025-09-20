@@ -14,7 +14,7 @@ function App() {
       {({ signOut, user }) => (
         <div className="App">
           <header className="app-header">
-            <h1>GreAtAIgent 🚀</h1>
+            <h1>Great AI Agent 🚀</h1>
             <div>
               <span>Welcome, {user.username}!</span>
               <button onClick={signOut} className="signout-btn">Sign Out</button>
