@@ -10,52 +10,35 @@ function CampaignForm() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log('🔥 Generate button clicked');
-    console.log('📝 Form data:', formData);
-    console.log('🌐 API URL:', process.env.REACT_APP_API_BASE_URL);
-    
-    setLoading(true);
+  e.preventDefault();
+  console.log('Generate button clicked');
+  setLoading(true);
 
-    // Use JSON instead of FormData for now
-    const payload = {
-      description: formData.description,
-      targetAudience: 'general audience',
-      platform: 'Instagram'
-    };
+  // ✅ Use formData from state, rename to avoid conflict
+  const payload = new FormData();
+  payload.append("description", formData.description);
+  if (formData.image) {
+    payload.append("image", formData.image);
+  }
 
-    console.log('📤 Sending payload:', payload);
+  try {
+    const response = await fetch('http://localhost:8080/api/campaigns/generate', {
+      method: 'POST',
+      body: payload
+    });
+    const result = await response.json();
+    setCampaign(result);
+  } catch (error) {
+    console.error('Error:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/generateCampaign`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      console.log('📥 Response status:', response.status);
-      console.log('📥 Response headers:', response.headers);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      console.log('✅ API Response:', result);
-      setCampaign(result);
-    } catch (error) {
-      console.error('❌ Error:', error);
-      alert(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
   
   const handleSave = async () => {
     try {
-      await fetch(`${process.env.REACT_APP_API_BASE_URL}/saveCampaign`, {
+      await fetch('http://localhost:8080/api/campaigns/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(campaign)

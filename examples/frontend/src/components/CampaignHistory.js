@@ -10,7 +10,7 @@ function CampaignHistory() {
 
   const fetchCampaigns = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/getCampaigns`);
+      const response = await fetch('http://localhost:5000/api/campaigns');
       const data = await response.json();
       setCampaigns(data);
     } catch (error) {
@@ -33,8 +33,8 @@ function CampaignHistory() {
           {campaigns.map((campaign) => (
             <div key={campaign.id} className="campaign-card">
               <div className="campaign-image">
-                {campaign.imageUrl ? (
-                  <img src={campaign.imageUrl} alt="Campaign" />
+                {campaign.image_url ? (
+                  <img src={campaign.image_url} alt="Campaign" />
                 ) : (
                   <div className="placeholder">No Image</div>
                 )}
@@ -48,7 +48,7 @@ function CampaignHistory() {
                   ))}
                 </div>
                 <small className="date">
-                  {new Date(campaign.createdAt).toLocaleDateString()}
+                  {new Date(campaign.created_at).toLocaleDateString()}
                 </small>
               </div>
             </div>

@@ -31,9 +31,23 @@ Resources:
       CodeUri: functions/generateCampaign/
       Handler: index.handler
       Runtime: nodejs18.x
+      Timeout: 30
       Environment:
         Variables:
           S3_BUCKET: !Ref S3Bucket
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:PutObjectAcl
+              Resource: !Sub "arn:aws:s3:::${S3Bucket}/*"
       Events:
         GenerateCampaign:
           Type: Api
