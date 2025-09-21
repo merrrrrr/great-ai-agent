@@ -1,28 +1,52 @@
 import React, { useState } from 'react';
+import Login from './components/Login';
+import Navigation from './components/Navigation';
 import Dashboard from './components/Dashboard';
 import CampaignForm from './components/CampaignForm';
 import CampaignHistory from './components/CampaignHistory';
 import './App.css';
 
 function App() {
-  const [currentView, setCurrentView] = useState('dashboard');
-  const [user, setUser] = useState({ name: 'Demo User' }); // Mock auth
+  const [user, setUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState('dashboard');
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+    setCurrentPage('dashboard');
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentPage('dashboard');
+  };
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+  };
+
+  if (!user) {
+    return <Login onLogin={handleLogin} />;
+  }
 
   return (
     <div className="App">
-      <nav className="navbar">
-        <h1>Great AI Agent</h1>
-        <div className="nav-links">
-          <button onClick={() => setCurrentView('dashboard')}>Dashboard</button>
-          <button onClick={() => setCurrentView('create')}>Create Campaign</button>
-          <button onClick={() => setCurrentView('history')}>History</button>
-        </div>
-      </nav>
-
-      <main className="main-content">
-        {currentView === 'dashboard' && <Dashboard setCurrentView={setCurrentView} />}
-        {currentView === 'create' && <CampaignForm />}
-        {currentView === 'history' && <CampaignHistory />}
+      <Navigation 
+        currentPage={currentPage} 
+        onNavigate={handleNavigate} 
+        user={user} 
+        onLogout={handleLogout} 
+      />
+      
+      <main className="app-content">
+        {currentPage === 'dashboard' && (
+          <Dashboard user={user} onNavigate={handleNavigate} />
+        )}
+        {currentPage === 'create' && (
+          <CampaignForm onNavigate={handleNavigate} />
+        )}
+        {currentPage === 'history' && (
+          <CampaignHistory user={user} onNavigate={handleNavigate} />
+        )}
       </main>
     </div>
   );
