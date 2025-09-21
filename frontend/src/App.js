@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Login from './components/Login';
+import Auth from './components/Auth';
 import Navigation from './components/Navigation';
 import Dashboard from './components/Dashboard';
 import CampaignForm from './components/CampaignForm';
@@ -25,7 +25,7 @@ function App() {
   };
 
   if (!user) {
-    return <Login onLogin={handleLogin} />;
+    return <Auth onLogin={handleLogin} />;
   }
 
   return (
