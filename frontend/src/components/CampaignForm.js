@@ -7,7 +7,13 @@ function CampaignForm({ onNavigate }) {
     description: '',
     contentStyle: '',
     platform: '',
-    image: null
+    image: null,
+    audience: {
+      age: '',
+      gender: '',
+      location: '',
+      language: ''
+    }
   });
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -22,9 +28,10 @@ function CampaignForm({ onNavigate }) {
     setLoading(true);
 
     // Use JSON instead of FormData for now
+    const audienceDetails = Object.values(formData.audience).filter(v => v).join(', ') || 'general audience';
     const payload = {
       description: formData.description,
-      targetAudience: 'general audience',
+      targetAudience: audienceDetails,
       platform: formData.platform || 'Instagram',
       contentStyle: formData.contentStyle
     };
@@ -143,6 +150,66 @@ function CampaignForm({ onNavigate }) {
                   <option value="tiktok">TikTok</option>
                   <option value="youtube">YouTube</option>
                 </select>
+              </div>
+            </div>
+            
+            <div className="audience-section">
+              <h3 className="section-title">Target Audience (Malaysia Focus)</h3>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Age Group</label>
+                  <select className="form-select" value={formData.audience.age} onChange={(e) => setFormData({...formData, audience: {...formData.audience, age: e.target.value}})}>
+                    <option value="">Select Age</option>
+                    <option value="18-24">18-24 (Gen Z)</option>
+                    <option value="25-34">25-34 (Millennials)</option>
+                    <option value="35-44">35-44 (Gen X)</option>
+                    <option value="45-54">45-54 (Gen X)</option>
+                    <option value="55+">55+ (Baby Boomers)</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Gender</label>
+                  <select className="form-select" value={formData.audience.gender} onChange={(e) => setFormData({...formData, audience: {...formData.audience, gender: e.target.value}})}>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="All">All Genders</option>
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Location</label>
+                  <select className="form-select" value={formData.audience.location} onChange={(e) => setFormData({...formData, audience: {...formData.audience, location: e.target.value}})}>
+                    <option value="">Select Location</option>
+                    <option value="Kuala Lumpur">Kuala Lumpur</option>
+                    <option value="Selangor">Selangor</option>
+                    <option value="Penang">Penang</option>
+                    <option value="Johor">Johor</option>
+                    <option value="Sabah">Sabah</option>
+                    <option value="Sarawak">Sarawak</option>
+                    <option value="Perak">Perak</option>
+                    <option value="Kedah">Kedah</option>
+                    <option value="Kelantan">Kelantan</option>
+                    <option value="Terengganu">Terengganu</option>
+                    <option value="Pahang">Pahang</option>
+                    <option value="Negeri Sembilan">Negeri Sembilan</option>
+                    <option value="Melaka">Melaka</option>
+                    <option value="Perlis">Perlis</option>
+                    <option value="All Malaysia">All Malaysia</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Language</label>
+                  <select className="form-select" value={formData.audience.language} onChange={(e) => setFormData({...formData, audience: {...formData.audience, language: e.target.value}})}>
+                    <option value="">Select Language</option>
+                    <option value="Bahasa Malaysia">Bahasa Malaysia</option>
+                    <option value="English">English</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Tamil">Tamil</option>
+                    <option value="Bilingual">Bilingual (BM/EN)</option>
+                  </select>
+                </div>
               </div>
             </div>
             
