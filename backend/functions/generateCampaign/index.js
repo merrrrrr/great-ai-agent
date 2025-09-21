@@ -76,7 +76,7 @@ async function generateImage(prompt) {
       imageGenerationConfig: {
         numberOfImages: 1,
         quality: "standard",
-        height: 512,
+        height: 768,
         width: 512,
         cfgScale: 8.0,
         seed: Math.floor(Math.random() * 1000000)
@@ -130,7 +130,7 @@ exports.handler = async (event) => {
     const campaign = await generateText(prompt);
     const keywords = extractKeywords(description);
     
-    let imageUrl = "https://picsum.photos/512/512";
+    let imageUrl = "https://picsum.photos/512/768";
     
     try {
       const imagePrompt = `Professional product photography of ${description}, clean white background, high quality, commercial photography style`;

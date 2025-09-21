@@ -110,7 +110,7 @@ const Dashboard = ({ user, onNavigate }) => {
 
         <div className="content-grid">
           <section className="campaigns-section">
-            <h2 className="section-title">Recent Campaigns</h2>
+            <h2 className="section-title">Recent Activity</h2>
           {campaigns.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">📝</div>
@@ -121,26 +121,16 @@ const Dashboard = ({ user, onNavigate }) => {
               </button>
             </div>
           ) : (
-            <div className="campaigns-grid">
-              {campaigns.map((campaign) => (
-                <div key={campaign.id} className="campaign-card">
-                  <div className="campaign-image">
+            <div className="activity-list">
+              {campaigns.slice(0, 5).map((campaign) => (
+                <div key={campaign.id} className="activity-item">
+                  <div className="activity-thumbnail">
                     <img src={campaign.imageUrl} alt={campaign.description} />
                   </div>
-                  <div className="campaign-content">
-                    <h3 className="campaign-title">{campaign.description}</h3>
-                    <p className="campaign-caption">{campaign.caption?.substring(0, 100)}...</p>
-                    <div className="campaign-hashtags">
-                      {campaign.hashtags?.slice(0, 3).map((hashtag, index) => (
-                        <span key={index} className="hashtag">{hashtag}</span>
-                      ))}
-                    </div>
-                    <div className="campaign-meta">
-                      <span className="campaign-date">{formatDate(campaign.createdAt)}</span>
-                      <span className="campaign-engagement">
-                        {Math.floor(Math.random() * 1000)} engagements
-                      </span>
-                    </div>
+                  <div className="activity-details">
+                    <h4>Campaign Created</h4>
+                    <p>{campaign.description}</p>
+                    <span className="activity-time">{formatDate(campaign.createdAt)}</span>
                   </div>
                 </div>
               ))}
