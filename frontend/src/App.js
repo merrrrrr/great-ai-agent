@@ -31,23 +31,6 @@ function App() {
 
   return (
     <div className="App">
-<<<<<<< HEAD
-      <nav className="navbar">
-        <h1>Great AI Agent</h1>
-        <div className="nav-links">
-          <button onClick={() => setCurrentView('dashboard')}>Dashboard</button>
-          <button onClick={() => setCurrentView('create')}>Create Campaign</button>
-          <button onClick={() => setCurrentView('history')}>History</button>
-          <button onClick={() => setCurrentView('test')}>🔧 Test Backend</button>
-        </div>
-      </nav>
-
-      <main className="main-content">
-        {currentView === 'dashboard' && <Dashboard setCurrentView={setCurrentView} />}
-        {currentView === 'create' && <CampaignForm />}
-        {currentView === 'history' && <CampaignHistory />}
-        {currentView === 'test' && <BackendTest />}
-=======
       <Navigation 
         currentPage={currentPage} 
         onNavigate={handleNavigate} 
@@ -65,7 +48,6 @@ function App() {
         {currentPage === 'history' && (
           <CampaignHistory user={user} onNavigate={handleNavigate} />
         )}
->>>>>>> 0d2d2b817a64f18068a9e5a1ce9706a6cb987c2e
       </main>
     </div>
   );
