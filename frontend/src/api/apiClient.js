@@ -28,7 +28,7 @@ const apiClient = {
   },
 
   async getCampaigns() {
-    const response = await axios.get(`${API_BASE_URL}/campaigns`);
+    const response = await axios.get(`${API_BASE_URL}/getCampaigns`);
     return response.data;
   }
 };
