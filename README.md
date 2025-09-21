@@ -2,7 +2,17 @@
 AI-powered content generation platform for SMEs in Malaysia.  
 Generate captions, hashtags, visuals, and even voiceovers with Amazon Bedrock, Comprehend, Polly, and S3.  
 
+## 🎯 Features
+
+- ✅ AI-powered caption generation (Llama 3 8B)
+- ✅ AI image generation (Nova Canvas)
+- ✅ Smart hashtag extraction
+- ✅ Campaign preview (Instagram mockup)
+- ✅ Campaign history tracking
+- ✅ Multi-platform support
+
 ## ⚡ Tech Stack
+
 - **Frontend:** React + AWS Amplify (Auth + Hosting)
 - **Backend:** AWS Lambda + API Gateway
 - **AI:** Amazon Bedrock (LLM + Stable Diffusion)
@@ -118,15 +128,6 @@ curl -X POST https://0wnrk1jgj5.execute-api.ap-southeast-5.amazonaws.com/dev/gen
     "platform": "Instagram"
   }'
 ```
-
-## 🎯 Features
-
-- ✅ AI-powered caption generation (Llama 3 8B)
-- ✅ AI image generation (Nova Canvas)
-- ✅ Smart hashtag extraction
-- ✅ Campaign preview (Instagram mockup)
-- ✅ Campaign history tracking
-- ✅ Multi-platform support
 
 ## 🔧 Troubleshooting
 

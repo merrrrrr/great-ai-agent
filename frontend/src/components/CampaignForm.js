@@ -8,6 +8,7 @@ function CampaignForm() {
   });
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [generationType, setGenerationType] = useState('campaign');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +28,14 @@ function CampaignForm() {
     console.log('📤 Sending payload:', payload);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/generateCampaign`, {
+      let endpoint;
+      switch(generationType) {
+        case 'text': endpoint = '/generateText'; break;
+        case 'image': endpoint = '/generateImage'; break;
+        default: endpoint = '/generateCampaign';
+      }
+      
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -44,7 +52,16 @@ function CampaignForm() {
       
       const result = await response.json();
       console.log('✅ API Response:', result);
-      setCampaign(result);
+      
+      // Add form data to result for saving
+      const campaignWithFormData = {
+        ...result,
+        description: formData.description,
+        targetAudience: payload.targetAudience,
+        platform: payload.platform
+      };
+      
+      setCampaign(campaignWithFormData);
     } catch (error) {
       console.error('❌ Error:', error);
       alert(`Error: ${error.message}`);
@@ -53,24 +70,25 @@ function CampaignForm() {
     }
   };
   
-  const handleSave = async () => {
-    try {
-      await fetch(`${process.env.REACT_APP_API_BASE_URL}/saveCampaign`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(campaign)
-      });
-      alert('Campaign saved successfully!');
-    } catch (error) {
-      console.error('Error saving:', error);
-    }
-  };
+
 
   return (
     <div className="campaign-form">
       <div className="form-section">
         <h2>Create New Campaign</h2>
         <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Generation Type:</label>
+            <select 
+              value={generationType} 
+              onChange={(e) => setGenerationType(e.target.value)}
+            >
+              <option value="campaign">Complete Campaign (Text + Image)</option>
+              <option value="text">Text Only (Caption + Hashtags)</option>
+              <option value="image">Image Only</option>
+            </select>
+          </div>
+          
           <div className="form-group">
             <label>Describe your product/campaign goal:</label>
             <textarea
@@ -91,14 +109,14 @@ function CampaignForm() {
           </div>
           
           <button type="submit" disabled={loading}>
-            {loading ? 'Generating...' : 'Generate Campaign'}
+            {loading ? 'Generating...' : `Generate ${generationType === 'campaign' ? 'Campaign' : generationType === 'text' ? 'Text' : 'Image'}`}
           </button>
         </form>
       </div>
 
       {campaign && (
         <div className="preview-section">
-          <CampaignPreview campaign={campaign} onSave={handleSave} />
+          <CampaignPreview campaign={campaign} generationType={generationType} />
         </div>
       )}
     </div>
