@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Login from './components/Login';
+import Navigation from './components/Navigation';
 import Dashboard from './components/Dashboard';
 import CampaignForm from './components/CampaignForm';
 import CampaignHistory from './components/CampaignHistory';
@@ -6,11 +8,30 @@ import BackendTest from './components/BackendTest';
 import './App.css';
 
 function App() {
-  const [currentView, setCurrentView] = useState('dashboard');
-  const [user, setUser] = useState({ name: 'Demo User' }); // Mock auth
+  const [user, setUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState('dashboard');
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+    setCurrentPage('dashboard');
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentPage('dashboard');
+  };
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+  };
+
+  if (!user) {
+    return <Login onLogin={handleLogin} />;
+  }
 
   return (
     <div className="App">
+<<<<<<< HEAD
       <nav className="navbar">
         <h1>Great AI Agent</h1>
         <div className="nav-links">
@@ -26,6 +47,25 @@ function App() {
         {currentView === 'create' && <CampaignForm />}
         {currentView === 'history' && <CampaignHistory />}
         {currentView === 'test' && <BackendTest />}
+=======
+      <Navigation 
+        currentPage={currentPage} 
+        onNavigate={handleNavigate} 
+        user={user} 
+        onLogout={handleLogout} 
+      />
+      
+      <main className="app-content">
+        {currentPage === 'dashboard' && (
+          <Dashboard user={user} onNavigate={handleNavigate} />
+        )}
+        {currentPage === 'create' && (
+          <CampaignForm onNavigate={handleNavigate} />
+        )}
+        {currentPage === 'history' && (
+          <CampaignHistory user={user} onNavigate={handleNavigate} />
+        )}
+>>>>>>> 0d2d2b817a64f18068a9e5a1ce9706a6cb987c2e
       </main>
     </div>
   );

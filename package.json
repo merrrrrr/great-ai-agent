@@ -1,0 +1,8 @@
+{
+  "name": "great-ai-agent",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd frontend && npm run build && xcopy build ..\\build /E /I /Y",
+    "start": "cd frontend && npm start"
+  }
+}
