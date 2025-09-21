@@ -20,7 +20,11 @@ Respond with valid JSON in this exact format:
 <|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
 
   const input = {
+<<<<<<< HEAD
+    modelId: process.env.BEDROCK_TEXT_MODEL || "meta.llama3-8b-instruct-v1:0",
+=======
     modelId: process.env.BEDROCK_TEXT_MODEL,
+>>>>>>> 0d2d2b817a64f18068a9e5a1ce9706a6cb987c2e
     contentType: "application/json",
     accept: "application/json",
     body: JSON.stringify({
@@ -44,7 +48,20 @@ Respond with valid JSON in this exact format:
     
     if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
       const jsonText = generatedText.substring(jsonStart, jsonEnd + 1);
-      return JSON.parse(jsonText);
+      const parsedJson = JSON.parse(jsonText);
+      
+      // Clean the caption if it contains examples or extra text
+      if (parsedJson.caption) {
+        const lines = parsedJson.caption.split('\n');
+        const cleanCaption = lines.find(line => 
+          line.trim().length > 20 && 
+          !line.toLowerCase().includes('example') &&
+          !line.toLowerCase().includes('here are')
+        ) || lines[0];
+        parsedJson.caption = cleanCaption.trim();
+      }
+      
+      return parsedJson;
     }
   }
   throw new Error('Invalid JSON in Bedrock response');
@@ -52,7 +69,11 @@ Respond with valid JSON in this exact format:
 
 async function generateImage(prompt) {
   const input = {
+<<<<<<< HEAD
+    modelId: process.env.BEDROCK_IMAGE_MODEL || "amazon.nova-canvas-v1:0",
+=======
     modelId: process.env.BEDROCK_IMAGE_MODEL,
+>>>>>>> 0d2d2b817a64f18068a9e5a1ce9706a6cb987c2e
     contentType: "application/json",
     accept: "application/json",
     body: JSON.stringify({
@@ -106,9 +127,9 @@ function extractKeywords(text) {
 
 exports.handler = async (event) => {
   try {
-    const { description, targetAudience, platform } = JSON.parse(event.body);
+    const { description, targetAudience, platform, contentStyle } = JSON.parse(event.body);
     
-    const prompt = `Create a marketing campaign for: ${description}. Target audience: ${targetAudience || 'general audience'}. Platform: ${platform || 'Instagram'}. 
+    const prompt = `Create a marketing campaign for: ${description}. Target audience: ${targetAudience || 'general audience'}. Platform: ${platform || 'Instagram'}. Content style: ${contentStyle || 'professional'}. 
     Generate:
     1. A compelling caption (max 150 words)
     2. 5 relevant hashtags

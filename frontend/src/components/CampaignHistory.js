@@ -16,6 +16,11 @@ const CampaignHistory = ({ user, onNavigate }) => {
 
   const fetchCampaigns = async () => {
     try {
+<<<<<<< HEAD
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/getCampaigns`);
+      const data = await response.json();
+      setCampaigns(data);
+=======
       const data = await apiClient.getCampaigns();
       
       if (data && Array.isArray(data)) {
@@ -32,6 +37,7 @@ const CampaignHistory = ({ user, onNavigate }) => {
       } else {
         setCampaigns([]);
       }
+>>>>>>> 0d2d2b817a64f18068a9e5a1ce9706a6cb987c2e
     } catch (error) {
       console.error('Error fetching campaigns:', error);
       setCampaigns([]);
