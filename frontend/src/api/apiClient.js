@@ -30,6 +30,11 @@ const apiClient = {
   async getCampaigns() {
     const response = await axios.get(`${API_BASE_URL}/getCampaigns`);
     return response.data;
+  },
+
+  async auth(action, data) {
+    const response = await axios.post(`${API_BASE_URL}/auth`, { action, ...data });
+    return response.data;
   }
 };
 

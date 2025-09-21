@@ -14,7 +14,7 @@ Parameters:
     NoEcho: true
 
 Resources:
-  # DynamoDB Table
+  # DynamoDB Tables
   CampaignsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -35,6 +35,18 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: users
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
 
   # API Gateway
   GreatAIAgentApi:
@@ -181,6 +193,26 @@ Resources:
           Properties:
             RestApiId: !Ref GreatAIAgentApi
             Path: /generateImage
+            Method: post
+
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/auth/
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Environment:
+        Variables:
+          USERS_TABLE: !Ref UsersTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
+      Events:
+        Auth:
+          Type: Api
+          Properties:
+            RestApiId: !Ref GreatAIAgentApi
+            Path: /auth
             Method: post
 
 Outputs:
