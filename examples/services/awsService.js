@@ -27,7 +27,7 @@ Respond with valid JSON in this exact format:
 <|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
 
   const input = {
-    modelId: "meta.llama3-8b-instruct-v1:0",
+    modelId: process.env.BEDROCK_TEXT_MODEL || "meta.llama3-8b-instruct-v1:0",
     contentType: "application/json",
     accept: "application/json",
     body: JSON.stringify({
@@ -106,7 +106,7 @@ async function generateImage(prompt) {
   console.log("🎨 Starting image generation with prompt:", prompt);
   
   const input = {
-    modelId: "amazon.titan-image-generator-v1:0", // Try this model ID instead
+    modelId: process.env.BEDROCK_IMAGE_MODEL || "amazon.titan-image-generator-v1:0", // Try this model ID instead
     contentType: "application/json",
     accept: "application/json",
     body: JSON.stringify({
@@ -184,7 +184,7 @@ async function generateImage(prompt) {
 // Alternative function to try different model versions
 async function generateImageFallback(prompt) {
   const models = [
-    "amazon.titan-image-generator-v1:0",
+    process.env.BEDROCK_IMAGE_MODEL || "amazon.titan-image-generator-v1:0",
     "amazon.titan-image-generator-g1:latest",
     "stability.stable-diffusion-xl-base-v1-0" // Alternative model
   ];
