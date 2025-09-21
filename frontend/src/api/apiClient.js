@@ -32,10 +32,7 @@ const apiClient = {
     return response.data;
   },
 
-  async auth(action, data) {
-    const response = await axios.post(`${API_BASE_URL}/auth`, { action, ...data });
-    return response.data;
-  }
+
 };
 
 export default apiClient;

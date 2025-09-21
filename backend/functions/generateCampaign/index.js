@@ -20,11 +20,7 @@ Respond with valid JSON in this exact format:
 <|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
 
   const input = {
-<<<<<<< HEAD
     modelId: process.env.BEDROCK_TEXT_MODEL || "meta.llama3-8b-instruct-v1:0",
-=======
-    modelId: process.env.BEDROCK_TEXT_MODEL,
->>>>>>> 0d2d2b817a64f18068a9e5a1ce9706a6cb987c2e
     contentType: "application/json",
     accept: "application/json",
     body: JSON.stringify({
@@ -56,11 +52,7 @@ Respond with valid JSON in this exact format:
 
 async function generateImage(prompt) {
   const input = {
-<<<<<<< HEAD
     modelId: process.env.BEDROCK_IMAGE_MODEL || "amazon.nova-canvas-v1:0",
-=======
-    modelId: process.env.BEDROCK_IMAGE_MODEL,
->>>>>>> 0d2d2b817a64f18068a9e5a1ce9706a6cb987c2e
     contentType: "application/json",
     accept: "application/json",
     body: JSON.stringify({

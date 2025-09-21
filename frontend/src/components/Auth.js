@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import apiClient from '../api/apiClient';
 import './Auth.css';
 
 const Auth = ({ onLogin }) => {
@@ -13,15 +12,17 @@ const Auth = ({ onLogin }) => {
     setLoading(true);
     setError('');
 
-    try {
-      const result = await apiClient.auth(isLogin ? 'login' : 'register', formData);
-      localStorage.setItem('user', JSON.stringify(result.user));
-      onLogin(result.user);
-    } catch (error) {
-      setError(error.response?.data?.error || 'Authentication failed');
-    } finally {
+    // Mock authentication - no backend needed
+    setTimeout(() => {
+      const user = {
+        id: 'demo-user',
+        name: formData.name || 'Demo User',
+        email: formData.email
+      };
+      localStorage.setItem('user', JSON.stringify(user));
+      onLogin(user);
       setLoading(false);
-    }
+    }, 500);
   };
 
   return (
