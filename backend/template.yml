@@ -18,7 +18,7 @@ Resources:
   CampaignsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: great-ai-agent-campaigns
+      TableName: !Sub "${AWS::StackName}-campaigns"
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: id
