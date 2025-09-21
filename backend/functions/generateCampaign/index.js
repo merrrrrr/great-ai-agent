@@ -48,20 +48,7 @@ Respond with valid JSON in this exact format:
     
     if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
       const jsonText = generatedText.substring(jsonStart, jsonEnd + 1);
-      const parsedJson = JSON.parse(jsonText);
-      
-      // Clean the caption if it contains examples or extra text
-      if (parsedJson.caption) {
-        const lines = parsedJson.caption.split('\n');
-        const cleanCaption = lines.find(line => 
-          line.trim().length > 20 && 
-          !line.toLowerCase().includes('example') &&
-          !line.toLowerCase().includes('here are')
-        ) || lines[0];
-        parsedJson.caption = cleanCaption.trim();
-      }
-      
-      return parsedJson;
+      return JSON.parse(jsonText);
     }
   }
   throw new Error('Invalid JSON in Bedrock response');
@@ -127,9 +114,9 @@ function extractKeywords(text) {
 
 exports.handler = async (event) => {
   try {
-    const { description, targetAudience, platform, contentStyle } = JSON.parse(event.body);
+    const { description, targetAudience, platform } = JSON.parse(event.body);
     
-    const prompt = `Create a marketing campaign for: ${description}. Target audience: ${targetAudience || 'general audience'}. Platform: ${platform || 'Instagram'}. Content style: ${contentStyle || 'professional'}. 
+    const prompt = `Create a marketing campaign for: ${description}. Target audience: ${targetAudience || 'general audience'}. Platform: ${platform || 'Instagram'}. 
     Generate:
     1. A compelling caption (max 150 words)
     2. 5 relevant hashtags
