@@ -6,9 +6,9 @@ const s3Client = new S3Client({ region: "ap-southeast-5" });
 
 exports.handler = async (event) => {
   try {
-    const { description } = JSON.parse(event.body);
+    const { description, contentStyle } = JSON.parse(event.body);
     
-    const prompt = `Product photography of ${description}, professional lighting, clean background, high quality, commercial style`;
+    const prompt = `Product photography of ${description}, ${contentStyle || 'professional'} style, high quality, commercial photography`;
 
     const command = new InvokeModelCommand({
       modelId: process.env.BEDROCK_IMAGE_MODEL,
