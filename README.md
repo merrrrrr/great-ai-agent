@@ -6,6 +6,8 @@ Generate captions, hashtags, visuals, and even voiceovers with Amazon Bedrock, C
 
 - ✅ AI-powered caption generation (Llama 3 8B)
 - ✅ AI image generation (Nova Canvas)
+- ✅ Generation type selector (Campaign/Text/Image)
+- ✅ Content style options (Professional, Casual, Creative, etc.)
 - ✅ Smart hashtag extraction
 - ✅ Campaign preview (Instagram mockup)
 - ✅ Campaign history tracking
@@ -13,25 +15,35 @@ Generate captions, hashtags, visuals, and even voiceovers with Amazon Bedrock, C
 
 ## ⚡ Tech Stack
 
-- **Frontend:** React + AWS Amplify (Auth + Hosting)
+- **Frontend:** React + AWS Amplify (Hosting)
 - **Backend:** AWS Lambda + API Gateway
-- **AI:** Amazon Bedrock (LLM + Stable Diffusion)
-- **NLP:** AWS Comprehend (keyword/hashtag analysis)
-- **Voiceover:** Amazon Polly
+- **AI:** Amazon Bedrock (Llama 3 8B + Nova Canvas)
 - **Storage:** Amazon S3
-- **Database:** Amazon DocumentDB
+- **Database:** Amazon DynamoDB
 
 ## 📂 Project Structure
 ```
-frontend/     # React + Amplify
-backend/      # Lambda functions
-infrastructure/ # API Gateway, IAM, Amplify config
+frontend/           # React application
+├── src/
+│   ├── components/   # React components
+│   └── App.js       # Main app
+└── public/         # Static files
+
+backend/            # AWS SAM application
+├── functions/      # Lambda functions
+│   ├── generateCampaign/
+│   ├── generateText/
+│   ├── generateImage/
+│   ├── saveCampaign/
+│   └── getCampaigns/
+└── template.yml    # SAM template
+
+amplify/            # Amplify configuration
 ```
 
 ## 🌐 Live Demo
 
-**Frontend:** [Deployed on AWS Amplify](https://main.d2k7lojphc90md.amplifyapp.com)
-**API:** https://0wnrk1jgj5.execute-api.ap-southeast-5.amazonaws.com/dev
+**Frontend:** [Deployed on AWS Amplify](https://dev.d2k7lojphc90md.amplifyapp.com)
 
 ## 🚀 Complete Setup Guide
 
@@ -106,7 +118,7 @@ git clone <repository-url>
 cd great-ai-agent
 
 # Copy environment template
-cp .env.example .env
+cp frontend/.env.example frontend/.env
 ```
 
 ### 5. Configure Environment Variables
@@ -148,11 +160,18 @@ aws s3api put-bucket-policy --bucket great-ai-agent-media --policy '{
 ```
 
 ### 8. Deploy Backend
+
+**Pre-deployment checklist:**
+- ✅ AWS credentials configured (`aws sts get-caller-identity` works)
+- ✅ Bedrock models enabled in us-east-1 region
+- ✅ S3 bucket created in ap-southeast-5 region
+
 ```bash
 cd backend
 npm install
 sam build
 
+# Deploy with guided setup
 sam deploy --guided
 
 # Follow prompts:
@@ -162,6 +181,8 @@ sam deploy --guided
 # - Confirm changes: Y
 # - Allow IAM role creation: Y
 # - Functions have no authentication: Y (for all)
+
+# WAIT for "Successfully created/updated stack" message before proceeding
 ```
 
 **Get your API Gateway URL after deployment:**
@@ -173,17 +194,39 @@ aws cloudformation describe-stacks \
   --output text
 ```
 
+**⚠️ IMPORTANT: Verify endpoints are working:**
+```bash
+# Test generateCampaign endpoint (should return JSON, not "Missing Authentication Token")
+curl -X POST https://YOUR_API_URL_HERE/dev/generateCampaign \
+  -H "Content-Type: application/json" \
+  -d '{"description":"test product"}'
+
+# If you get "Missing Authentication Token", redeploy:
+cd backend
+sam build && sam deploy
+```
+
 ### 9. Setup Frontend
 ```bash
 cd frontend
 npm install
 
-# Update .env with deployed API URL
-echo "REACT_APP_API_BASE_URL=https://0wnrk1jgj5.execute-api.ap-southeast-5.amazonaws.com/dev" > .env
+# CRITICAL: Get your actual API URL from step 8 and replace YOUR_API_URL_HERE
+# Example: https://abc123.execute-api.ap-southeast-5.amazonaws.com/dev
+echo "REACT_APP_API_BASE_URL=YOUR_API_URL_HERE" > .env
+
+# Verify .env file was created correctly
+cat .env
+# Should show: REACT_APP_API_BASE_URL=https://your-actual-api-url/dev
 
 # Start development server
 npm start
 ```
+
+**⚠️ TROUBLESHOOTING: If frontend shows "Failed to fetch" errors:**
+1. Check your `.env` file has the correct API URL
+2. Restart the React app after changing `.env`
+3. Test the API URL works: `curl -X POST YOUR_API_URL/generateCampaign -H "Content-Type: application/json" -d '{"description":"test"}'`
 
 ## 🌐 API Endpoints
 
@@ -203,15 +246,48 @@ Base URL: `https://your-api-gateway-url/dev` (Get from deployment output)
 - **Text Only**: Caption, hashtags, and keywords
 - **Image Only**: AI-generated product image
 
-### Example Request
+### API Parameters
+- **description** (required): Product/campaign description
+- **targetAudience**: Target demographic (default: "general audience")
+- **platform**: Social media platform (default: "Instagram")
+- **contentStyle**: Content style (professional, casual, creative, etc.)
+
+
+### Example Requests
+
+**Complete Campaign:**
 ```bash
-curl -X POST https://0wnrk1jgj5.execute-api.ap-southeast-5.amazonaws.com/dev/generateCampaign \
+curl -X POST https://your-api-url/dev/generateCampaign \
   -H "Content-Type: application/json" \
   -d '{
     "description": "Eco-friendly water bottles for active lifestyle",
     "targetAudience": "Health-conscious millennials",
-    "platform": "Instagram"
+    "platform": "Instagram",
+    "contentStyle": "professional",
+
   }'
+```
+
+**Image Only:**
+```bash
+curl -X POST https://your-api-url/dev/generateImage \
+  -H "Content-Type: application/json" \
+  -d '{
+    "description": "Modern smartphone",
+    "contentStyle": "minimalist",
+
+  }'
+```
+
+### Response Format
+```json
+{
+  "caption": "Engaging social media caption...",
+  "hashtags": ["#tag1", "#tag2", "#tag3"],
+  "keywords": ["keyword1", "keyword2"],
+  "imageUrl": "https://s3.../image.png",
+  "createdAt": "2024-01-01T00:00:00.000Z"
+}
 ```
 
 ## 🔧 Troubleshooting
@@ -283,12 +359,12 @@ sam build && sam deploy
 # Test generateCampaign endpoint
 curl -X POST https://your-api-url/dev/generateCampaign \
   -H "Content-Type: application/json" \
-  -d '{"description":"test product","targetAudience":"general","platform":"Instagram"}'
+  -d '{"description":"test product","contentStyle":"professional"}'
 
 # Test generateText endpoint
 curl -X POST https://your-api-url/dev/generateText \
   -H "Content-Type: application/json" \
-  -d '{"description":"test product","targetAudience":"general","platform":"Instagram"}'
+  -d '{"description":"test product","platform":"Instagram","contentStyle":"casual"}'
 
 # Test generateImage endpoint
 curl -X POST https://your-api-url/dev/generateImage \
